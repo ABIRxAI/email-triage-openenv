@@ -1,0 +1,20 @@
+[project]
+name = "email-triage-openenv"
+version = "0.1.0"
+description = "OpenEnv environment for email triage, spam detection, and response automation"
+authors = [
+    { name = "Abir Brahma" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "openai",
+    "numpy"
+]
+
+[tool.setuptools]
+packages = ["env", "config"]
