@@ -124,36 +124,48 @@ mark_spam OR mark_important OR reply OR ignore OR escalate
             action_type="reply",
             content="Thank you for your email."
         )
-
-
+    
 def run():
     total_score = 0
     total_steps = 0
 
-    EPISODES = 5  
-    for _ in range(EPISODES):
+    EPISODES = 5
+
+    for episode in range(EPISODES):
         obs = env.reset()
         done = False
+        step_count = 0
+        episode_score = 0
+
+        task_name = env.current_task.get("task_type", "email_task")
+
+        # START BLOCK
+        print(f"[START] task={task_name}", flush=True)
 
         while not done:
             action = decide_action(obs)
-
             obs, reward, done, _ = env.step(action)
+            step_count += 1
+            episode_score += reward.value
 
-            total_score += reward.value
-            total_steps += 1
+            # STEP BLOCK
+            print(
+                f"[STEP] step={step_count} reward={round(reward.value,3)}",
+                flush=True
+            )
 
-            print(f"Action: {action.action_type}")
-            print(f"Reward: {reward.value} | Reason: {reward.reason}")
-            print("-" * 40)
+        final_score = round(episode_score / step_count, 3) if step_count else 0
+        total_score += final_score
+        total_steps += step_count
 
-    print("\nFinal Score:", total_score / EPISODES)
-    print("Total Steps:", total_steps)
+        # END BLOCK
+        print(
+            f"[END] task={task_name} score={final_score} steps={step_count}",
+            flush=True
+        )
+
+    print("\nFinal Score:", round(total_score / EPISODES, 3), flush=True)
+    print("Total Steps:", total_steps, flush=True)
 
 if __name__ == "__main__":
     run()
-
-    # Keep container alive for Hugging Face Spaces 
-    print("Execution complete. Keeping container alive...") 
-    while True: 
-        time.sleep(60)
